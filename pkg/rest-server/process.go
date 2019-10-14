@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/kapustkin/go_guared/pkg/rest-server/config"
-	"github.com/kapustkin/go_guared/pkg/utils/logger"
+	"github.com/kapustkin/go_guard/pkg/rest-server/config"
+	"github.com/kapustkin/go_guard/pkg/utils/logger"
 	log "github.com/sirupsen/logrus"
 )
 
