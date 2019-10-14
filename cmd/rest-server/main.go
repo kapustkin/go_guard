@@ -1,14 +1,13 @@
 package main
 
 import (
-	"log"
-
 	rest "github.com/kapustkin/go_guard/pkg/rest-server"
-	"github.com/kapustkin/go_guard/pkg/utils/helpers"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	if helpers.HasError(rest.Run()) {
-		log.Fatalf("unhandled app exception")
+	err := rest.Run()
+	if err != nil {
+		log.Fatalf("unhandled app exception %v", err)
 	}
 }

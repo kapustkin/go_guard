@@ -55,6 +55,12 @@ func Run() error {
 			r.Post("/{user}/edit", calendarService.EditEvent)
 			r.Post("/{user}/remove", calendarService.RemoveEvent)
 		})*/
+
 	log.Infof("listner started...")
-	return http.ListenAndServe(conf.Host, r)
+
+	err := http.ListenAndServe(conf.Host, r)
+	if err != nil {
+		log.Error(err)
+	}
+	return err
 }
