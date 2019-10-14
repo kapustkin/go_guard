@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/kapustkin/go_guard/pkg/rest"
+	rest "github.com/kapustkin/go_guard/pkg/rest-server"
 )
 
 func main() {
