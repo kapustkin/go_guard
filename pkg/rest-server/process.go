@@ -6,13 +6,13 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	log "github.com/sirupsen/logrus"
 	"github.com/kapustkin/go_guared/pkg/rest-server/config"
 	"github.com/kapustkin/go_guared/pkg/utils/logger"
+	log "github.com/sirupsen/logrus"
 )
 
 // Run основной обработчик
-func Run(args []string) error {
+func Run() error {
 	// logger init
 	logger.Init("rest-server", "0.0.1")
 	log.Info("starting app...")
@@ -35,7 +35,7 @@ func Run(args []string) error {
 		log.Warn("starting without request logging...")
 	}
 
-	calendarService := calendar.Init(grpcDal)
+	//calendarService := calendar.Init(grpcDal)
 
 	// Healthchecks
 	r.Route("/", func(r chi.Router) {
@@ -48,12 +48,13 @@ func Run(args []string) error {
 	})
 
 	// Routes
-	r.Route("/calendar", func(r chi.Router) {
-		r.Get("/{user}", calendarService.GetEvents)
-		r.Post("/{user}/add", calendarService.AddEvent)
-		r.Post("/{user}/edit", calendarService.EditEvent)
-		r.Post("/{user}/remove", calendarService.RemoveEvent)
-	})
+	/*
+		r.Route("/calendar", func(r chi.Router) {
+			r.Get("/{user}", calendarService.GetEvents)
+			r.Post("/{user}/add", calendarService.AddEvent)
+			r.Post("/{user}/edit", calendarService.EditEvent)
+			r.Post("/{user}/remove", calendarService.RemoveEvent)
+		})*/
 	log.Infof("listner started...")
 	return http.ListenAndServe(conf.Host, r)
 }
