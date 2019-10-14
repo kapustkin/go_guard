@@ -1,3 +1,3 @@
-module github.com/kapustkin/go_guard/pkg/rest-server
+module mod
 
 go 1.13

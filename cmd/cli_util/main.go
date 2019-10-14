@@ -1,7 +1,7 @@
 package main
 
 import (
-	cli "github.com/kapustkin/go_guard/pkg/cli-util"
+	cli "github.com/kapustkin/go_guard/pkg/cliutil"
 )
 
 func main() {
