@@ -14,5 +14,4 @@ type Storage interface {
 	FindOrCreateBucket(ident string) (Bucket, error)
 	UpdateBucket(ident string, bucket *Bucket) error
 	RemoveBucket(ident string) error
-	//RemoveOldBuckets(expireTime time.Time) error
 }

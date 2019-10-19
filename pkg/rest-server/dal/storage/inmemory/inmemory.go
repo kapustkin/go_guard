@@ -9,54 +9,54 @@ import (
 )
 
 // DB структура хранилища
-type DB struct {
-	db *database
+type Storage struct {
+	db *localStorage
 }
 
-type database struct {
+type localStorage struct {
 	sync.RWMutex
 	data map[string]storage.Bucket
 }
 
 // Init storage
-func Init() *DB {
+func Init() *Storage {
 	storage := make(map[string]storage.Bucket)
-	return &DB{db: &database{data: storage}}
+	return &Storage{db: &localStorage{data: storage}}
 }
 
 // GetBucket return Bucket
-func (d *DB) FindOrCreateBucket(ident string) (storage.Bucket, error) {
-	d.db.RLock()
-	defer d.db.RUnlock()
+func (s *Storage) FindOrCreateBucket(ident string) (storage.Bucket, error) {
+	s.db.RLock()
+	defer s.db.RUnlock()
 
 	// bucket exist
-	if _, ok := d.db.data[ident]; ok {
-		return d.db.data[ident], nil
+	if _, ok := s.db.data[ident]; ok {
+		return s.db.data[ident], nil
 	}
 	// new bucket
-	d.db.data[ident] = storage.Bucket{Created: time.Now()}
-	return d.db.data[ident], nil
+	s.db.data[ident] = storage.Bucket{Created: time.Now()}
+	return s.db.data[ident], nil
 }
 
 // UpdateBucket element to storage
-func (d *DB) UpdateBucket(ident string, bucket *storage.Bucket) error {
-	d.db.Lock()
-	defer d.db.Unlock()
+func (s *Storage) UpdateBucket(ident string, bucket *storage.Bucket) error {
+	s.db.Lock()
+	defer s.db.Unlock()
 	// bucket exist
-	if _, ok := d.db.data[ident]; ok {
-		d.db.data[ident] = *bucket
+	if _, ok := s.db.data[ident]; ok {
+		s.db.data[ident] = *bucket
 		return nil
 	}
 	return fmt.Errorf("record %s not found", ident)
 }
 
 // RemoveBucket edit event
-func (d *DB) RemoveBucket(ident string) error {
-	d.db.Lock()
-	defer d.db.Unlock()
+func (s *Storage) RemoveBucket(ident string) error {
+	s.db.Lock()
+	defer s.db.Unlock()
 
-	if _, ok := d.db.data[ident]; ok {
-		delete(d.db.data, ident)
+	if _, ok := s.db.data[ident]; ok {
+		delete(s.db.data, ident)
 		return nil
 	}
 
