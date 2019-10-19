@@ -7,6 +7,9 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/kapustkin/go_guard/pkg/rest-server/config"
+	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal"
+	"github.com/kapustkin/go_guard/pkg/rest-server/dal/inmemory"
+	"github.com/kapustkin/go_guard/pkg/rest-server/handlers"
 	"github.com/kapustkin/go_guard/pkg/utils/logger"
 	log "github.com/sirupsen/logrus"
 )
@@ -35,8 +38,7 @@ func Run() error {
 		log.Warn("starting without request logging...")
 	}
 
-	//calendarService := calendar.Init(grpcDal)
-
+	handler := handlers.Init(getStorage(conf.Storage))
 	// Healthchecks
 	r.Route("/", func(r chi.Router) {
 		r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
@@ -47,14 +49,19 @@ func Run() error {
 		})
 	})
 
-	// Routes
-	/*
-		r.Route("/calendar", func(r chi.Router) {
-			r.Get("/{user}", calendarService.GetEvents)
-			r.Post("/{user}/add", calendarService.AddEvent)
-			r.Post("/{user}/edit", calendarService.EditEvent)
-			r.Post("/{user}/remove", calendarService.RemoveEvent)
-		})*/
+	// Checker
+	r.Route("/checker", func(r chi.Router) {
+		r.Post("/", handler.RequestChecker)
+	})
+
+	// Adminka
+	r.Route("/admin", func(r chi.Router) {
+		r.Post("/reset", handler.ResetBucket)
+		r.Post("/whitelist", handler.AddToWhiteList)
+		r.Delete("/whitelist", handler.RemoveFromWhiteList)
+		r.Post("/blacklist", handler.AddToBlackList)
+		r.Delete("/blacklist", handler.RemoveFromBlackList)
+	})
 
 	log.Infof("listner started...")
 
@@ -63,4 +70,16 @@ func Run() error {
 		log.Error(err)
 	}
 	return err
+}
+
+func getStorage(storageType int) *storage.Storage {
+	switch storageType {
+	case 0:
+		var db storage.Storage
+		db = inmemory.Init()
+		return &db
+	default:
+		log.Panicf("storage type %d not supported", storageType)
+	}
+	return nil
 }
