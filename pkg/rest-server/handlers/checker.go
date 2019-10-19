@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal"
+	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal/storage"
 	"github.com/kapustkin/go_guard/pkg/rest-server/handlers/internal"
 	logger "github.com/sirupsen/logrus"
 )
@@ -24,7 +24,7 @@ type request struct {
 
 // Init main handler
 func Init(st *storage.Storage) *MainHandler {
-	return &MainHandler{db: *st, k: 3, m: 3, n: 3}
+	return &MainHandler{db: *st, k: 3, m: 6, n: 9}
 }
 
 // Check all events for user

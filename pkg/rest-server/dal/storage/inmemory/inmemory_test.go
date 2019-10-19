@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal"
+	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal/storage"
 )
 
 type testpair struct {

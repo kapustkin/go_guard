@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal"
-	"github.com/kapustkin/go_guard/pkg/rest-server/dal/inmemory"
+	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal/storage"
+	"github.com/kapustkin/go_guard/pkg/rest-server/dal/storage/inmemory"
 )
 
 type testpair struct {

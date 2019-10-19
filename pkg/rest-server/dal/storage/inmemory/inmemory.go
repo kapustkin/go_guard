@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal"
+	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal/storage"
 )
 
 // DB структура хранилища

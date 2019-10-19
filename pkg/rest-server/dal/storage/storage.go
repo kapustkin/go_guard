@@ -4,12 +4,6 @@ import (
 	"time"
 )
 
-const (
-	N = 1
-	M = 2
-	K = 3
-)
-
 // Bucket
 type Bucket struct {
 	Created time.Time
