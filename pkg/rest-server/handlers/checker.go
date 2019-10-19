@@ -6,26 +6,14 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/kapustkin/go_guard/pkg/rest-server/dal/database"
-	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal/storage"
 	"github.com/kapustkin/go_guard/pkg/rest-server/handlers/internal"
 	logger "github.com/sirupsen/logrus"
 )
-
-type MainHandler struct {
-	store storage.Storage
-	db    database.Database
-}
 
 type request struct {
 	Login    string
 	Password string
 	IP       string
-}
-
-// Init main handler
-func Init(st *storage.Storage, db *database.Database) *MainHandler {
-	return &MainHandler{store: *st, db: *db}
 }
 
 // Check all events for user

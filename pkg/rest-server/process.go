@@ -87,7 +87,6 @@ func getStorage(storageType int) *storage.Storage {
 }
 
 func getDatabase(conn string) *database.Database {
-	var db database.Database
-	db = postgres.Init(conn)
+	var db database.Database = postgres.Init(conn)
 	return &db
 }
