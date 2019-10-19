@@ -32,6 +32,10 @@ func (s *Storage) FindOrCreateBucket(ident string) (storage.Bucket, error) {
 	s.db.RLock()
 	defer s.db.RUnlock()
 
+	if ident == "" {
+		return storage.Bucket{}, fmt.Errorf("ident must be not empty")
+	}
+
 	// bucket exist
 	if _, ok := s.db.data[ident]; ok {
 		return s.db.data[ident], nil
@@ -45,6 +49,9 @@ func (s *Storage) FindOrCreateBucket(ident string) (storage.Bucket, error) {
 func (s *Storage) UpdateBucket(ident string, bucket *storage.Bucket) error {
 	s.db.Lock()
 	defer s.db.Unlock()
+	if ident == "" {
+		return fmt.Errorf("ident must be not empty")
+	}
 	// bucket exist
 	if _, ok := s.db.data[ident]; ok {
 		s.db.data[ident] = *bucket
@@ -57,6 +64,9 @@ func (s *Storage) UpdateBucket(ident string, bucket *storage.Bucket) error {
 func (s *Storage) RemoveBucket(ident string) error {
 	s.db.Lock()
 	defer s.db.Unlock()
+	if ident == "" {
+		return fmt.Errorf("ident must be not empty")
+	}
 
 	if _, ok := s.db.data[ident]; ok {
 		delete(s.db.data, ident)

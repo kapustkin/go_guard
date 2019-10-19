@@ -1,4 +1,4 @@
-package internal
+package checker
 
 import (
 	"time"
@@ -8,7 +8,6 @@ import (
 
 // ProcessBucket полностью обрабатывает бакет
 func ProcessBucket(db storage.Storage, ident string, limit int) (bool, error) {
-	//return true, nil
 	bucket, err := db.FindOrCreateBucket(ident)
 	if err != nil {
 		return false, err

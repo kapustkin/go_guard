@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/kapustkin/go_guard/pkg/rest-server/handlers/internal"
+	"github.com/kapustkin/go_guard/pkg/rest-server/handlers/internal/checker"
 	logger "github.com/sirupsen/logrus"
 )
 
@@ -42,21 +42,21 @@ func (handler *MainHandler) RequestChecker(res http.ResponseWriter, req *http.Re
 	//black-white list ip check
 
 	//usual checks
-	loginRes, err := internal.ProcessBucket(handler.store, r.Login, params.K)
+	loginRes, err := checker.ProcessBucket(handler.store, r.Login, params.K)
 	if err != nil {
 		logger.Errorf(err.Error())
 		http.Error(res, "error in processBucket", http.StatusInternalServerError)
 		return
 	}
 	logger.Infof("process result %v=%v", r.Login, loginRes)
-	passwordRes, err := internal.ProcessBucket(handler.store, r.Password, params.M)
+	passwordRes, err := checker.ProcessBucket(handler.store, r.Password, params.M)
 	if err != nil {
 		logger.Errorf(err.Error())
 		http.Error(res, "error in processBucket", http.StatusInternalServerError)
 		return
 	}
 	logger.Infof("process result %v=%v", r.Password, passwordRes)
-	ipRes, err := internal.ProcessBucket(handler.store, r.IP, params.N)
+	ipRes, err := checker.ProcessBucket(handler.store, r.IP, params.N)
 	if err != nil {
 		logger.Errorf(err.Error())
 		http.Error(res, "error in processBucket", http.StatusInternalServerError)
@@ -66,12 +66,4 @@ func (handler *MainHandler) RequestChecker(res http.ResponseWriter, req *http.Re
 	//nolint:
 	res.Write([]byte(fmt.Sprintf("ok=%v", loginRes && passwordRes && ipRes)))
 	logger.Infof("response ok=%v", loginRes && passwordRes && ipRes)
-}
-
-func (handler *MainHandler) ResetBucket(res http.ResponseWriter, req *http.Request) {
-	_, err := res.Write([]byte("ok"))
-	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-	}
 }
