@@ -13,9 +13,8 @@ import (
 )
 
 type MainHandler struct {
-	store   storage.Storage
-	db      database.Database
-	k, m, n int
+	store storage.Storage
+	db    database.Database
 }
 
 type request struct {
@@ -26,7 +25,7 @@ type request struct {
 
 // Init main handler
 func Init(st *storage.Storage, db *database.Database) *MainHandler {
-	return &MainHandler{store: *st, db: *db, k: 3, m: 6, n: 9}
+	return &MainHandler{store: *st, db: *db}
 }
 
 // Check all events for user
@@ -45,7 +44,7 @@ func (handler *MainHandler) RequestChecker(res http.ResponseWriter, req *http.Re
 		return
 	}
 	logger.Infof("process request %v", r)
-	// get parametrs from db
+	// get parameters from db
 	params, err := handler.db.GetParametrs()
 	if err != nil {
 		logger.Errorf(err.Error())

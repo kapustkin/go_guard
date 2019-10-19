@@ -23,7 +23,6 @@ func Init(app string, version string) {
 			"app":     app,
 			"version": version,
 		})
-	//return requestLogger
 }
 
 type PlainFormatter struct {

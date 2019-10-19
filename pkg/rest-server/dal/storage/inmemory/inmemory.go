@@ -21,6 +21,9 @@ type localStorage struct {
 // Init storage
 func Init() *Storage {
 	storage := make(map[string]storage.Bucket)
+
+	//TODO start gourutine for remove old buckets
+
 	return &Storage{db: &localStorage{data: storage}}
 }
 
