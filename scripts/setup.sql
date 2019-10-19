@@ -12,3 +12,6 @@ CREATE TABLE lists (
     	IsWhite BOOLEAN DEFAULT false,
 	    IpAddress text
 );
+
+
+INSERT INTO parameters (createDate, k, m, n) VALUES ('2019-10-19 19:00:00', 3, 6 ,9);

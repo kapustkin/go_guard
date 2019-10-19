@@ -7,6 +7,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/kapustkin/go_guard/pkg/rest-server/config"
+	"github.com/kapustkin/go_guard/pkg/rest-server/dal/database"
+	"github.com/kapustkin/go_guard/pkg/rest-server/dal/database/postgres"
 	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal/storage"
 	"github.com/kapustkin/go_guard/pkg/rest-server/dal/storage/inmemory"
 	"github.com/kapustkin/go_guard/pkg/rest-server/handlers"
@@ -38,7 +40,7 @@ func Run() error {
 		log.Warn("starting without request logging...")
 	}
 
-	handler := handlers.Init(getStorage(conf.Storage))
+	handler := handlers.Init(getStorage(conf.Storage), getDatabase(conf.Database))
 	// Healthchecks
 	r.Route("/", func(r chi.Router) {
 		r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
@@ -82,4 +84,10 @@ func getStorage(storageType int) *storage.Storage {
 		log.Panicf("storage type %d not supported", storageType)
 	}
 	return nil
+}
+
+func getDatabase(conn string) *database.Database {
+	var db database.Database
+	db = postgres.Init(conn)
+	return &db
 }

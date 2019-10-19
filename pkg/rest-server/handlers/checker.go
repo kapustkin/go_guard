@@ -6,13 +6,15 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/kapustkin/go_guard/pkg/rest-server/dal/database"
 	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal/storage"
 	"github.com/kapustkin/go_guard/pkg/rest-server/handlers/internal"
 	logger "github.com/sirupsen/logrus"
 )
 
 type MainHandler struct {
-	db      storage.Storage
+	store   storage.Storage
+	db      database.Database
 	k, m, n int
 }
 
@@ -23,8 +25,8 @@ type request struct {
 }
 
 // Init main handler
-func Init(st *storage.Storage) *MainHandler {
-	return &MainHandler{db: *st, k: 3, m: 6, n: 9}
+func Init(st *storage.Storage, db *database.Database) *MainHandler {
+	return &MainHandler{store: *st, db: *db, k: 3, m: 6, n: 9}
 }
 
 // Check all events for user
@@ -43,24 +45,31 @@ func (handler *MainHandler) RequestChecker(res http.ResponseWriter, req *http.Re
 		return
 	}
 	logger.Infof("process request %v", r)
+	// get parametrs from db
+	params, err := handler.db.GetParametrs()
+	if err != nil {
+		logger.Errorf(err.Error())
+		http.Error(res, "error load parameters", http.StatusForbidden)
+		return
+	}
 	//black-white list ip check
 
 	//usual checks
-	loginRes, err := internal.ProcessBucket(handler.db, r.Login, handler.k)
+	loginRes, err := internal.ProcessBucket(handler.store, r.Login, params.K)
 	if err != nil {
 		logger.Errorf(err.Error())
 		http.Error(res, "error in processBucket", http.StatusInternalServerError)
 		return
 	}
 	logger.Infof("process result %v=%v", r.Login, loginRes)
-	passwordRes, err := internal.ProcessBucket(handler.db, r.Password, handler.m)
+	passwordRes, err := internal.ProcessBucket(handler.store, r.Password, params.M)
 	if err != nil {
 		logger.Errorf(err.Error())
 		http.Error(res, "error in processBucket", http.StatusInternalServerError)
 		return
 	}
 	logger.Infof("process result %v=%v", r.Password, passwordRes)
-	ipRes, err := internal.ProcessBucket(handler.db, r.IP, handler.n)
+	ipRes, err := internal.ProcessBucket(handler.store, r.IP, params.N)
 	if err != nil {
 		logger.Errorf(err.Error())
 		http.Error(res, "error in processBucket", http.StatusInternalServerError)
