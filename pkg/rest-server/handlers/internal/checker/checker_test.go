@@ -27,6 +27,20 @@ var testsCheckBucket = []testPairCheck{
 	{&storage.Bucket{Created: time.Now().Add(time.Second * -30), Value: 3}, 3, false},
 }
 
+func TestCheckBucket(t *testing.T) {
+	for _, pair := range testsCheckBucket {
+		_, v := checkBucket(pair.backet, pair.limit)
+		if v != pair.result {
+			t.Error(
+				"For", pair.backet,
+				"with limit", pair.limit,
+				"expected", pair.result,
+				"got", v,
+			)
+		}
+	}
+}
+
 type testPairProcess struct {
 	limit     int
 	ident     string
@@ -47,20 +61,6 @@ var testsProcessBucket = []testPairProcess{
 	{4, "", false, fmt.Errorf("ident must be not empty")},
 }
 
-func TestCheckBucket(t *testing.T) {
-	for _, pair := range testsCheckBucket {
-		_, v := checkBucket(pair.backet, pair.limit)
-		if v != pair.result {
-			t.Error(
-				"For", pair.backet,
-				"with limit", pair.limit,
-				"expected", pair.result,
-				"got", v,
-			)
-		}
-	}
-}
-
 func TestProcessBucket(t *testing.T) {
 	var db = inmemory.Init()
 
@@ -76,10 +76,50 @@ func TestProcessBucket(t *testing.T) {
 		}
 		if err != nil && err.Error() != pair.resultErr.Error() {
 			t.Error(
-				"Exceprition for", pair.ident,
+				"Exception for", pair.ident,
 				"with limit", pair.limit,
 				"expected", pair.result,
 				"got ", err.Error(),
+			)
+		}
+	}
+}
+
+type testPairAddress struct {
+	network string
+	address string
+	result  bool
+	err     error
+}
+
+// nolint: gochecknoglobals
+var testsIsAddressInNewtork = []testPairAddress{
+	{"192.168.1.0/24", "192.168.1.241", true, nil},
+	{"192.168.1.0/24", "192.168.2.115", false, nil},
+	{"192.168.1.0/30", "192.168.1.2", true, nil},
+	{"192.168.1.0/16", "192.168.16.251", true, nil},
+	{"192.168.1.0/16", "aaa", false, fmt.Errorf("ip adress not corrected")},
+	{"this is no ip", "some text", false, fmt.Errorf("invalid CIDR address: this is no ip")},
+}
+
+func TestIsAddressInNewtork(t *testing.T) {
+
+	for _, pair := range testsIsAddressInNewtork {
+		res, err := IsAddressInNewtork(pair.network, pair.address)
+		if err != nil && err.Error() != pair.err.Error() {
+			t.Error(
+				"Exception for", pair.network,
+				"with limit", pair.address,
+				"expected", pair.result,
+				"got ", err.Error(),
+			)
+		}
+		if res != pair.result {
+			t.Error(
+				"For", pair.network,
+				"with address", pair.address,
+				"expected", pair.result,
+				"got", res,
 			)
 		}
 	}

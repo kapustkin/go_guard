@@ -1,10 +1,25 @@
 package checker
 
 import (
+	"fmt"
+	"net"
 	"time"
 
 	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal/storage"
 )
+
+// IsAddressInNewtork
+func IsAddressInNewtork(network, addr string) (bool, error) {
+	_, subnet, err := net.ParseCIDR(network)
+	if err != nil {
+		return false, err
+	}
+	ip := net.ParseIP(addr)
+	if ip.IsUnspecified() {
+		return false, fmt.Errorf("ip adress not corrected")
+	}
+	return subnet.Contains(ip), nil
+}
 
 // ProcessBucket полностью обрабатывает бакет
 func ProcessBucket(db storage.Storage, ident string, limit int) (bool, error) {

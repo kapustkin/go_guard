@@ -16,10 +16,10 @@ type Parameters struct {
 type List struct {
 	Created time.Time
 	IsWhite bool
-	Address string
+	Network string
 }
 
 type Database interface {
 	GetParametrs() (*Parameters, error)
-	GetAddressList() (*List, error)
+	GetAddressList() (*[]List, error)
 }

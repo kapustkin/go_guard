@@ -28,6 +28,12 @@ type parametersTable struct {
 	N      int       `db:"n"`
 }
 
+type addressListsTable struct {
+	Create  time.Time `db:"createdate"`
+	IsWhite bool      `db:"iswhite"`
+	Network string    `db:"network"`
+}
+
 //GetParametrs
 func (d *DB) GetParametrs() (*db.Parameters, error) {
 	parameters := []parametersTable{}
@@ -47,6 +53,21 @@ func (d *DB) GetParametrs() (*db.Parameters, error) {
 }
 
 //GetAddressList
-func (d *DB) GetAddressList() (*db.List, error) {
-	return &db.List{}, nil
+func (d *DB) GetAddressList() (*[]db.List, error) {
+	rawData := []addressListsTable{}
+	err := d.db.Select(&rawData, `SELECT createDate,IsWhite, Network FROM addressLists ORDER by Id DESC`)
+	if err != nil {
+		return nil, err
+	}
+
+	var result = make([]db.List, len(rawData))
+	for i, r := range rawData {
+		result[i] = db.List{
+			Created: r.Create,
+			IsWhite: r.IsWhite,
+			Network: r.Network,
+		}
+	}
+
+	return &result, nil
 }
