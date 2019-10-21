@@ -16,7 +16,7 @@ func IsAddressInNewtork(network, addr string) (bool, error) {
 	}
 	ip := net.ParseIP(addr)
 	if ip.IsUnspecified() {
-		return false, fmt.Errorf("ip adress not corrected")
+		return false, fmt.Errorf("ip address not corrected")
 	}
 	return subnet.Contains(ip), nil
 }

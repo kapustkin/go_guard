@@ -14,7 +14,7 @@ func (handler *MainHandler) ResetBucket(res http.ResponseWriter, req *http.Reque
 	}
 }
 
-func (e *MainHandler) AddToWhiteList(res http.ResponseWriter, req *http.Request) {
+func (handler *MainHandler) AddToWhiteList(res http.ResponseWriter, req *http.Request) {
 	_, err := res.Write([]byte("ok"))
 	if err != nil {
 		logger.Errorf(err.Error())
@@ -22,7 +22,7 @@ func (e *MainHandler) AddToWhiteList(res http.ResponseWriter, req *http.Request)
 	}
 }
 
-func (e *MainHandler) RemoveFromWhiteList(res http.ResponseWriter, req *http.Request) {
+func (handler *MainHandler) RemoveFromWhiteList(res http.ResponseWriter, req *http.Request) {
 	_, err := res.Write([]byte("ok"))
 	if err != nil {
 		logger.Errorf(err.Error())
@@ -30,7 +30,7 @@ func (e *MainHandler) RemoveFromWhiteList(res http.ResponseWriter, req *http.Req
 	}
 }
 
-func (e *MainHandler) AddToBlackList(res http.ResponseWriter, req *http.Request) {
+func (handler *MainHandler) AddToBlackList(res http.ResponseWriter, req *http.Request) {
 	_, err := res.Write([]byte("ok"))
 	if err != nil {
 		logger.Errorf(err.Error())
@@ -38,7 +38,7 @@ func (e *MainHandler) AddToBlackList(res http.ResponseWriter, req *http.Request)
 	}
 }
 
-func (e *MainHandler) RemoveFromBlackList(res http.ResponseWriter, req *http.Request) {
+func (handler *MainHandler) RemoveFromBlackList(res http.ResponseWriter, req *http.Request) {
 	_, err := res.Write([]byte("ok"))
 	if err != nil {
 		logger.Errorf(err.Error())

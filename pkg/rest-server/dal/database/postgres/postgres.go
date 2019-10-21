@@ -36,6 +36,9 @@ type addressListsTable struct {
 
 //GetParametrs
 func (d *DB) GetParametrs() (*db.Parameters, error) {
+	if d.db == nil {
+		return nil, fmt.Errorf("no connection to database")
+	}
 	parameters := []parametersTable{}
 	err := d.db.Select(&parameters, `SELECT createDate,K,M,N FROM parameters ORDER by createDate DESC LIMIT 1`)
 	if err != nil {
@@ -54,6 +57,10 @@ func (d *DB) GetParametrs() (*db.Parameters, error) {
 
 //GetAddressList
 func (d *DB) GetAddressList() (*[]db.List, error) {
+	if d.db == nil {
+		return nil, fmt.Errorf("no connection to database")
+	}
+
 	rawData := []addressListsTable{}
 	err := d.db.Select(&rawData, `SELECT createDate,IsWhite, Network FROM addressLists ORDER by Id DESC`)
 	if err != nil {

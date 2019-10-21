@@ -98,7 +98,7 @@ var testsIsAddressInNewtork = []testPairAddress{
 	{"192.168.1.0/24", "192.168.2.115", false, nil},
 	{"192.168.1.0/30", "192.168.1.2", true, nil},
 	{"192.168.1.0/16", "192.168.16.251", true, nil},
-	{"192.168.1.0/16", "aaa", false, fmt.Errorf("ip adress not corrected")},
+	{"192.168.1.0/16", "aaa", false, fmt.Errorf("ip address not corrected")},
 	{"this is no ip", "some text", false, fmt.Errorf("invalid CIDR address: this is no ip")},
 }
 
