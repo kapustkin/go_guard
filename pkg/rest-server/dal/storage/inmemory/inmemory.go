@@ -6,6 +6,13 @@ import (
 	"time"
 
 	storage "github.com/kapustkin/go_guard/pkg/rest-server/dal/storage"
+	log "github.com/sirupsen/logrus"
+)
+
+//nolint
+var (
+	gcTimeout = 60 * time.Second
+	validTime = 60 * time.Second
 )
 
 // DB структура хранилища
@@ -20,11 +27,10 @@ type localStorage struct {
 
 // Init storage
 func Init() *Storage {
-	storage := make(map[string]storage.Bucket)
-
-	//TODO start gourutine for remove old buckets
-
-	return &Storage{db: &localStorage{data: storage}}
+	db := make(map[string]storage.Bucket)
+	storage := &Storage{db: &localStorage{data: db}}
+	go cleaner(storage)
+	return storage
 }
 
 // GetBucket return Bucket
@@ -74,4 +80,23 @@ func (s *Storage) RemoveBucket(ident string) error {
 	}
 
 	return fmt.Errorf("record %s not found", ident)
+}
+
+// cleaner remove old buckets
+func cleaner(s *Storage) {
+	for {
+		time.Sleep(gcTimeout)
+		s.db.Lock()
+		count := 0
+		for name, item := range s.db.data {
+			if item.Created.After(time.Now().Add(-validTime)) {
+				delete(s.db.data, name)
+				count++
+			}
+		}
+		if count > 0 {
+			log.Infof("gc removed %d buckets", count)
+		}
+		s.db.Unlock()
+	}
 }
