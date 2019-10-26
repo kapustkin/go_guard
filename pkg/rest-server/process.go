@@ -63,6 +63,7 @@ func Run() error {
 		r.Delete("/whitelist", handler.RemoveFromWhiteList)
 		r.Post("/blacklist", handler.AddToBlackList)
 		r.Delete("/blacklist", handler.RemoveFromBlackList)
+		r.Post("/params", handler.UpdateParameters)
 	})
 
 	log.Infof("listner started...")

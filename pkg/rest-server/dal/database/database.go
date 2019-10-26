@@ -21,5 +21,8 @@ type List struct {
 
 type Database interface {
 	GetParametrs() (*Parameters, error)
+	UpdateParametrs(k, m, n int) error
 	GetAddressList() (*[]List, error)
+	AddAddress(*List) error
+	UpdateAddress(network string, isWhite bool) error
 }

@@ -11,12 +11,6 @@ import (
 	logger "github.com/sirupsen/logrus"
 )
 
-type request struct {
-	Login    string
-	Password string
-	IP       string
-}
-
 // Check all events for user
 func (handler *MainHandler) RequestChecker(res http.ResponseWriter, req *http.Request) {
 	body, err := ioutil.ReadAll(req.Body)
@@ -25,7 +19,11 @@ func (handler *MainHandler) RequestChecker(res http.ResponseWriter, req *http.Re
 		http.Error(res, "error read request body", http.StatusForbidden)
 		return
 	}
-	var r request
+	var r struct {
+		Login    string
+		Password string
+		IP       string
+	}
 	err = json.Unmarshal(body, &r)
 	if err != nil {
 		logger.Errorf(err.Error())
@@ -43,7 +41,7 @@ func (handler *MainHandler) RequestChecker(res http.ResponseWriter, req *http.Re
 		return
 	}
 
-	err = mainChecks(handler, &r, res)
+	err = mainChecks(handler, r.Login, r.Password, r.IP, res)
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
@@ -51,7 +49,7 @@ func (handler *MainHandler) RequestChecker(res http.ResponseWriter, req *http.Re
 }
 
 //mainChecks in buckets
-func mainChecks(handler *MainHandler, r *request, res io.Writer) error {
+func mainChecks(handler *MainHandler, login, pass, addr string, res io.Writer) error {
 	// get parameters from db
 	params, err := handler.db.GetParametrs()
 	if err != nil {
@@ -59,29 +57,28 @@ func mainChecks(handler *MainHandler, r *request, res io.Writer) error {
 		return fmt.Errorf("error load parameters %v", err)
 	}
 	//check login
-	loginRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("l_%s", r.Login), params.K)
+	loginRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("l_%s", login), params.K)
 	if err != nil {
 		logger.Errorf(err.Error())
 		return fmt.Errorf("error in process bucket %v", err)
 	}
-	logger.Infof("process result %v=%v", r.Login, loginRes)
 	//check password
-	passwordRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("p_%s", r.Password), params.M)
+	passwordRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("p_%s", pass), params.M)
 	if err != nil {
 		logger.Errorf(err.Error())
 		return fmt.Errorf("error in process bucket %v", err)
 	}
-	logger.Infof("process result %v=%v", r.Password, passwordRes)
 	//check ip
-	ipRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("i_%s", r.IP), params.N)
+	ipRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("i_%s", addr), params.N)
 	if err != nil {
 		logger.Errorf(err.Error())
 		return fmt.Errorf("error in process bucket %v", err)
 	}
-	logger.Infof("process result %v=%v", r.IP, ipRes)
 	//nolint:
 	res.Write([]byte(fmt.Sprintf("ok=%v", loginRes && passwordRes && ipRes)))
-	logger.Infof("response ok=%v", loginRes && passwordRes && ipRes)
+	logger.Infof("login:%v=%v, pass:%v=%v, ip:%v=%v, result=>%v",
+		login, loginRes, pass, passwordRes, addr, ipRes,
+		loginRes && passwordRes && ipRes)
 	return nil
 }
 

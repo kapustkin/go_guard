@@ -16,7 +16,10 @@ func (handler *MainHandler) ResetBucket(res http.ResponseWriter, req *http.Reque
 		http.Error(res, "error read request body", http.StatusForbidden)
 		return
 	}
-	var r request
+	var r struct {
+		Login string
+		IP    string
+	}
 	err = json.Unmarshal(body, &r)
 	if err != nil {
 		logger.Errorf(err.Error())
@@ -64,4 +67,32 @@ func (handler *MainHandler) RemoveFromBlackList(res http.ResponseWriter, req *ht
 		logger.Errorf(err.Error())
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 	}
+}
+
+func (handler *MainHandler) UpdateParameters(res http.ResponseWriter, req *http.Request) {
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		logger.Errorf(err.Error())
+		http.Error(res, "error read request body", http.StatusForbidden)
+		return
+	}
+	var p struct {
+		K, M, N int
+	}
+	err = json.Unmarshal(body, &p)
+	if err != nil {
+		logger.Errorf(err.Error())
+		http.Error(res, "error parsing body", http.StatusForbidden)
+		return
+	}
+	logger.Infof("process update parameters %v", p)
+
+	err = handler.db.UpdateParametrs(p.K, p.M, p.N)
+	if err != nil {
+		logger.Errorf(err.Error())
+		http.Error(res, "update parameters failed", http.StatusForbidden)
+		return
+	}
+	//nolint
+	res.Write([]byte("ok"))
 }

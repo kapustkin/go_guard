@@ -27,10 +27,9 @@ func Init(conn string) *DB {
 }
 
 type parametersTable struct {
-	Create time.Time `db:"createdate"`
-	K      int       `db:"k"`
-	M      int       `db:"m"`
-	N      int       `db:"n"`
+	K int `db:"k"`
+	M int `db:"m"`
+	N int `db:"n"`
 }
 
 type addressListsTable struct {
@@ -45,7 +44,7 @@ func (d *DB) GetParametrs() (*db.Parameters, error) {
 		return nil, fmt.Errorf("no connection to database")
 	}
 	parameters := []parametersTable{}
-	err := d.db.Select(&parameters, `SELECT createDate,K,M,N FROM parameters ORDER by createDate DESC LIMIT 1`)
+	err := d.db.Select(&parameters, `SELECT K,M,N FROM parameters ORDER by createDate DESC LIMIT 1`)
 	if err != nil {
 		return nil, err
 	}
@@ -54,10 +53,21 @@ func (d *DB) GetParametrs() (*db.Parameters, error) {
 	}
 
 	return &db.Parameters{
-		Created: parameters[0].Create,
-		K:       parameters[0].K,
-		M:       parameters[0].M,
-		N:       parameters[0].N}, nil
+		K: parameters[0].K,
+		M: parameters[0].M,
+		N: parameters[0].N}, nil
+}
+
+//UpdateParametrs
+func (d *DB) UpdateParametrs(k, m, n int) error {
+	if d.db == nil {
+		return fmt.Errorf("no connection to database")
+	}
+	_, err := d.db.Exec(`INSERT INTO parameters (createDate,k,m,n) VALUES (current_timestamp, $1, $2, $3)`, k, m, n)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 //GetAddressList
@@ -82,4 +92,14 @@ func (d *DB) GetAddressList() (*[]db.List, error) {
 	}
 
 	return &result, nil
+}
+
+//AddAddress
+func (d *DB) AddAddress(data *db.List) error {
+	return fmt.Errorf("not implemented")
+}
+
+//UpdateAddress
+func (d *DB) UpdateAddress(network string, isWhite bool) error {
+	return fmt.Errorf("not implemented")
 }
