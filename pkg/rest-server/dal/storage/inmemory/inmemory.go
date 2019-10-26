@@ -66,20 +66,19 @@ func (s *Storage) UpdateBucket(ident string, bucket *storage.Bucket) error {
 	return fmt.Errorf("record %s not found", ident)
 }
 
-// RemoveBucket edit event
-func (s *Storage) RemoveBucket(ident string) error {
+// RemoveBuckets
+func (s *Storage) RemoveBuckets(idents ...string) error {
 	s.db.Lock()
 	defer s.db.Unlock()
-	if ident == "" {
+	if len(idents) == 0 || len(idents) == 1 && idents[0] == "" {
 		return fmt.Errorf("ident must be not empty")
 	}
-
-	if _, ok := s.db.data[ident]; ok {
-		delete(s.db.data, ident)
-		return nil
+	for _, ident := range idents {
+		if _, ok := s.db.data[ident]; ok {
+			delete(s.db.data, ident)
+		}
 	}
-
-	return fmt.Errorf("record %s not found", ident)
+	return nil
 }
 
 // cleaner remove old buckets

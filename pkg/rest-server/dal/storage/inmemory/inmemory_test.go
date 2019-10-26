@@ -35,7 +35,6 @@ var testsUpdateBucket = []testpair{
 
 // nolint: gochecknoglobals
 var testsRemoveBucket = []testpair{
-	{"test2", &storage.Bucket{}, 0, storage.Bucket{}, fmt.Errorf("record test2 not found")},
 	{"test", &storage.Bucket{}, 2, storage.Bucket{}, nil},
 	{"", &storage.Bucket{}, 0, storage.Bucket{}, fmt.Errorf("ident must be not empty")},
 }
@@ -67,7 +66,7 @@ func TestFindOrCreateBucket(t *testing.T) {
 func TestUpdateBucket(t *testing.T) {
 	for _, pair := range testsUpdateBucket {
 		err := db.UpdateBucket(pair.ident, pair.backet)
-		if err != pair.resultErr && pair.resultErr == nil {
+		if err == nil && pair.resultErr != nil {
 			t.Error(
 				"For", pair.backet,
 				"with limit", pair.limit,
@@ -76,7 +75,7 @@ func TestUpdateBucket(t *testing.T) {
 			)
 		}
 
-		if pair.resultErr != nil && err.Error() != pair.resultErr.Error() {
+		if pair.resultErr != nil && err != nil && err.Error() != pair.resultErr.Error() {
 			t.Error(
 				"For", pair.backet,
 				"with limit", pair.limit,
@@ -89,8 +88,8 @@ func TestUpdateBucket(t *testing.T) {
 
 func TestRemoveBucket(t *testing.T) {
 	for _, pair := range testsRemoveBucket {
-		err := db.RemoveBucket(pair.ident)
-		if err != pair.resultErr && pair.resultErr == nil {
+		err := db.RemoveBuckets(pair.ident)
+		if err == nil && pair.resultErr != nil {
 			t.Error(
 				"For", pair.backet,
 				"with limit", pair.limit,
@@ -99,7 +98,7 @@ func TestRemoveBucket(t *testing.T) {
 			)
 		}
 
-		if pair.resultErr != nil && err.Error() != pair.resultErr.Error() {
+		if pair.resultErr != nil && err != nil && err.Error() != pair.resultErr.Error() {
 			t.Error(
 				"For", pair.backet,
 				"with limit", pair.limit,

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	log "github.com/sirupsen/logrus"
+
 	"github.com/jmoiron/sqlx"
 	// no-lint
 	_ "github.com/lib/pq"
@@ -17,7 +19,10 @@ type DB struct {
 }
 
 func Init(conn string) *DB {
-	connection, _ := sqlx.Connect("postgres", conn)
+	connection, err := sqlx.Connect("postgres", conn)
+	if err != nil {
+		log.Fatalf("no connection to db")
+	}
 	return &DB{db: connection}
 }
 
