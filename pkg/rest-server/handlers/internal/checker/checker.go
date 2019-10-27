@@ -12,12 +12,14 @@ import (
 func IsAddressInNewtork(network, addr string) (bool, error) {
 	_, subnet, err := net.ParseCIDR(network)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("network parse error %v", err)
 	}
+
 	ip := net.ParseIP(addr)
 	if ip.IsUnspecified() {
-		return false, fmt.Errorf("ip address not corrected")
+		return false, fmt.Errorf("address parse error")
 	}
+
 	return subnet.Contains(ip), nil
 }
 
@@ -27,11 +29,14 @@ func ProcessBucket(db storage.Storage, ident string, limit int) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
 	bckt, result := checkBucket(&bucket, limit)
 	err = db.UpdateBucket(ident, bckt)
+
 	if err != nil {
 		return false, err
 	}
+
 	return result, nil
 }
 
@@ -39,6 +44,7 @@ func checkBucket(bucket *storage.Bucket, limit int) (*storage.Bucket, bool) {
 	if bucket.Created.Add(time.Second * 60).Before(time.Now()) {
 		bucket.Created = time.Now()
 		bucket.Value = 1
+
 		return bucket, true
 	}
 

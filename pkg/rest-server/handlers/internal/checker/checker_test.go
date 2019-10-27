@@ -15,7 +15,7 @@ type testPairCheck struct {
 	result bool
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var testsCheckBucket = []testPairCheck{
 	{&storage.Bucket{Value: 2}, 3, true},
 	{&storage.Bucket{Value: 3}, 3, true},
@@ -48,7 +48,7 @@ type testPairProcess struct {
 	resultErr error
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var testsProcessBucket = []testPairProcess{
 	{3, "test1", true, nil},
 	{3, "test1", true, nil},
@@ -74,6 +74,7 @@ func TestProcessBucket(t *testing.T) {
 				"got", res,
 			)
 		}
+
 		if err != nil && err.Error() != pair.resultErr.Error() {
 			t.Error(
 				"Exception for", pair.ident,
@@ -92,18 +93,17 @@ type testPairAddress struct {
 	err     error
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var testsIsAddressInNewtork = []testPairAddress{
 	{"192.168.1.0/24", "192.168.1.241", true, nil},
 	{"192.168.1.0/24", "192.168.2.115", false, nil},
 	{"192.168.1.0/30", "192.168.1.2", true, nil},
 	{"192.168.1.0/16", "192.168.16.251", true, nil},
 	{"192.168.1.0/16", "aaa", false, fmt.Errorf("ip address not corrected")},
-	{"this is no ip", "some text", false, fmt.Errorf("invalid CIDR address: this is no ip")},
+	{"this is no ip", "some text", false, fmt.Errorf("network parse error invalid CIDR address: this is no ip")},
 }
 
 func TestIsAddressInNewtork(t *testing.T) {
-
 	for _, pair := range testsIsAddressInNewtork {
 		res, err := IsAddressInNewtork(pair.network, pair.address)
 		if err != nil && err.Error() != pair.err.Error() {
@@ -114,6 +114,7 @@ func TestIsAddressInNewtork(t *testing.T) {
 				"got ", err.Error(),
 			)
 		}
+
 		if res != pair.result {
 			t.Error(
 				"For", pair.network,

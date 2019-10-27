@@ -29,7 +29,9 @@ type localStorage struct {
 func Init() *Storage {
 	db := make(map[string]storage.Bucket)
 	storage := &Storage{db: &localStorage{data: db}}
+
 	go cleaner(storage)
+
 	return storage
 }
 
@@ -48,6 +50,7 @@ func (s *Storage) FindOrCreateBucket(ident string) (storage.Bucket, error) {
 	}
 	// new bucket
 	s.db.data[ident] = storage.Bucket{Created: time.Now()}
+
 	return s.db.data[ident], nil
 }
 
@@ -55,6 +58,7 @@ func (s *Storage) FindOrCreateBucket(ident string) (storage.Bucket, error) {
 func (s *Storage) UpdateBucket(ident string, bucket *storage.Bucket) error {
 	s.db.Lock()
 	defer s.db.Unlock()
+
 	if ident == "" {
 		return fmt.Errorf("ident must be not empty")
 	}
@@ -63,6 +67,7 @@ func (s *Storage) UpdateBucket(ident string, bucket *storage.Bucket) error {
 		s.db.data[ident] = *bucket
 		return nil
 	}
+
 	return fmt.Errorf("record %s not found", ident)
 }
 
@@ -70,14 +75,15 @@ func (s *Storage) UpdateBucket(ident string, bucket *storage.Bucket) error {
 func (s *Storage) RemoveBuckets(idents ...string) error {
 	s.db.Lock()
 	defer s.db.Unlock()
+
 	if len(idents) == 0 || len(idents) == 1 && idents[0] == "" {
 		return fmt.Errorf("ident must be not empty")
 	}
+
 	for _, ident := range idents {
-		if _, ok := s.db.data[ident]; ok {
-			delete(s.db.data, ident)
-		}
+		delete(s.db.data, ident)
 	}
+
 	return nil
 }
 
@@ -87,12 +93,14 @@ func cleaner(s *Storage) {
 		time.Sleep(gcTimeout)
 		s.db.Lock()
 		count := 0
+
 		for name, item := range s.db.data {
 			if item.Created.After(time.Now().Add(-validTime)) {
 				delete(s.db.data, name)
 				count++
 			}
 		}
+
 		if count > 0 {
 			log.Infof("gc removed %d buckets", count)
 		}

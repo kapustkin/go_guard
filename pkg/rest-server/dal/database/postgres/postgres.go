@@ -7,7 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/jmoiron/sqlx"
-	// no-lint
+	//no-lint
 	_ "github.com/lib/pq"
 
 	db "github.com/kapustkin/go_guard/pkg/rest-server/dal/database"
@@ -23,6 +23,7 @@ func Init(conn string) *DB {
 	if err != nil {
 		log.Fatalf("no connection to db")
 	}
+
 	return &DB{db: connection}
 }
 
@@ -43,11 +44,14 @@ func (d *DB) GetParametrs() (*db.Parameters, error) {
 	if d.db == nil {
 		return nil, fmt.Errorf("no connection to database")
 	}
+
 	parameters := []parametersTable{}
 	err := d.db.Select(&parameters, `SELECT K,M,N FROM parameters ORDER by createDate DESC LIMIT 1`)
+
 	if err != nil {
 		return nil, err
 	}
+
 	if len(parameters) != 1 {
 		return nil, fmt.Errorf("unexcepted rows count")
 	}
@@ -63,10 +67,13 @@ func (d *DB) UpdateParametrs(k, m, n int) error {
 	if d.db == nil {
 		return fmt.Errorf("no connection to database")
 	}
-	_, err := d.db.Exec(`INSERT INTO parameters (createDate,k,m,n) VALUES (current_timestamp, $1, $2, $3)`, k, m, n)
+
+	_, err := d.db.Exec(`INSERT INTO parameters (createDate,k,m,n) 
+						 VALUES (current_timestamp, $1, $2, $3)`, k, m, n)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -78,8 +85,9 @@ func (d *DB) GetAddressList() (*[]db.List, error) {
 
 	rawData := []addressListsTable{}
 	err := d.db.Select(&rawData, `SELECT createDate,IsWhite, Network FROM addressLists ORDER by Id DESC`)
+
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error load white/black lists %v", err)
 	}
 
 	var result = make([]db.List, len(rawData))
@@ -95,11 +103,30 @@ func (d *DB) GetAddressList() (*[]db.List, error) {
 }
 
 //AddAddress
-func (d *DB) AddAddress(data *db.List) error {
-	return fmt.Errorf("not implemented")
+func (d *DB) AddAddress(network string, isWhite bool) error {
+	if d.db == nil {
+		return fmt.Errorf("no connection to database")
+	}
+
+	_, err := d.db.Exec(`INSERT INTO addressLists (createDate,network,iswhite)
+	 					 VALUES (current_timestamp, $1, $2)`, network, isWhite)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-//UpdateAddress
-func (d *DB) UpdateAddress(network string, isWhite bool) error {
-	return fmt.Errorf("not implemented")
+//RemoveeAddress
+func (d *DB) RemoveAddress(network string, isWhite bool) error {
+	if d.db == nil {
+		return fmt.Errorf("no connection to database")
+	}
+
+	_, err := d.db.Exec(`DELETE FROM addressLists WHERE network = $1 AND iswhite = $2`, network, isWhite)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

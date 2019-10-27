@@ -1,98 +1,128 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 
+	"github.com/kapustkin/go_guard/pkg/rest-server/handlers/internal"
+	"github.com/kapustkin/go_guard/pkg/rest-server/handlers/internal/admin"
 	logger "github.com/sirupsen/logrus"
 )
 
 func (handler *MainHandler) ResetBucket(res http.ResponseWriter, req *http.Request) {
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, "error read request body", http.StatusForbidden)
-		return
-	}
-	var r struct {
+	var p struct {
 		Login string
 		IP    string
 	}
-	err = json.Unmarshal(body, &r)
+
+	err := internal.ReadBody(req, &p)
 	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, "error parsing body", http.StatusForbidden)
+		internal.ForbiddenResponse(res, err, func() { logger.Errorf(err.Error()) })
 		return
 	}
-	logger.Infof("process ResetBucket %v", r)
-	err = handler.store.RemoveBuckets(fmt.Sprintf("l_%s", r.Login), fmt.Sprintf("i_%s", r.IP))
+
+	logger.Infof("process ResetBucket %v", p)
+	err = handler.store.RemoveBuckets(fmt.Sprintf("l_%s", p.Login), fmt.Sprintf("i_%s", p.IP))
+
 	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, "bucket remove failed", http.StatusForbidden)
+		internal.OkResponse(res, false, err, func() { logger.Errorf(err.Error()) })
 		return
 	}
-	//nolint
-	res.Write([]byte("ok"))
+
+	internal.OkResponse(res, true, nil, nil)
 }
 
-func (handler *MainHandler) AddToWhiteList(res http.ResponseWriter, req *http.Request) {
-	_, err := res.Write([]byte("ok"))
+func (handler *MainHandler) GetAllLists(res http.ResponseWriter, req *http.Request) {
+	list, err := handler.db.GetAddressList()
 	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+		internal.OkResponse(res, false, err, func() { logger.Errorf(err.Error()) })
+		return
 	}
+
+	type rec struct {
+		IsWhite bool
+		Network string
+	}
+
+	result := make([]rec, len(*list))
+	for i, item := range *list {
+		result[i] = rec{IsWhite: item.IsWhite, Network: item.Network}
+	}
+
+	internal.OkWithDataResponse(res, &result)
 }
 
-func (handler *MainHandler) RemoveFromWhiteList(res http.ResponseWriter, req *http.Request) {
-	_, err := res.Write([]byte("ok"))
-	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+func (handler *MainHandler) AddToList(res http.ResponseWriter, req *http.Request) {
+	var p struct {
+		Network string
+		IsWhite bool
 	}
+
+	err := internal.ReadBody(req, &p)
+	if err != nil {
+		internal.ForbiddenResponse(res, err, func() { logger.Errorf(err.Error()) })
+		return
+	}
+
+	err = admin.IsAddressValid(p.Network)
+	if err != nil {
+		internal.OkResponse(res, false, err, func() { logger.Errorf(err.Error()) })
+		return
+	}
+
+	logger.Infof("add to list %v", p)
+
+	err = handler.db.AddAddress(p.Network, p.IsWhite)
+	if err != nil {
+		internal.OkResponse(res, false, fmt.Errorf("%v", err), func() { logger.Errorf(err.Error()) })
+		return
+	}
+
+	internal.OkResponse(res, true, nil, nil)
 }
 
-func (handler *MainHandler) AddToBlackList(res http.ResponseWriter, req *http.Request) {
-	_, err := res.Write([]byte("ok"))
-	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+func (handler *MainHandler) RemoveFromList(res http.ResponseWriter, req *http.Request) {
+	var p struct {
+		Network string
+		IsWhite bool
 	}
-}
 
-func (handler *MainHandler) RemoveFromBlackList(res http.ResponseWriter, req *http.Request) {
-	_, err := res.Write([]byte("ok"))
+	err := internal.ReadBody(req, &p)
 	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+		internal.ForbiddenResponse(res, err, func() { logger.Errorf(err.Error()) })
+		return
 	}
+
+	logger.Infof("remove from list %v", p)
+	// проверка валидности адреса
+
+	err = handler.db.RemoveAddress(p.Network, p.IsWhite)
+	if err != nil {
+		internal.OkResponse(res, false, fmt.Errorf("%v", err), func() { logger.Errorf(err.Error()) })
+		return
+	}
+
+	internal.OkResponse(res, true, nil, nil)
 }
 
 func (handler *MainHandler) UpdateParameters(res http.ResponseWriter, req *http.Request) {
-	body, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, "error read request body", http.StatusForbidden)
-		return
-	}
 	var p struct {
 		K, M, N int
 	}
-	err = json.Unmarshal(body, &p)
+
+	err := internal.ReadBody(req, &p)
 	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, "error parsing body", http.StatusForbidden)
+		internal.ForbiddenResponse(res, err, func() { logger.Errorf(err.Error()) })
 		return
 	}
+
 	logger.Infof("process update parameters %v", p)
 
 	err = handler.db.UpdateParametrs(p.K, p.M, p.N)
 	if err != nil {
-		logger.Errorf(err.Error())
-		http.Error(res, "update parameters failed", http.StatusForbidden)
+		internal.OkResponse(res, false, fmt.Errorf("%v", err), func() { logger.Errorf(err.Error()) })
 		return
 	}
-	//nolint
-	res.Write([]byte("ok"))
+
+	internal.OkResponse(res, true, nil, nil)
 }

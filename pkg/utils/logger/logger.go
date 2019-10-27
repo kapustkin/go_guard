@@ -32,6 +32,7 @@ type PlainFormatter struct {
 
 func (f *PlainFormatter) Format(entry *log.Entry) ([]byte, error) {
 	timestamp := fmt.Sprint(entry.Time.Format(f.TimestampFormat))
+
 	return []byte(fmt.Sprintf(
 		"%s %s %v:L%v %s\n",
 		f.LevelDesc[entry.Level],
@@ -47,6 +48,7 @@ func NewChiLogger() func(next http.Handler) http.Handler {
 	log.Formatter = &logrus.JSONFormatter{
 		DisableTimestamp: true,
 	}
+
 	return middleware.RequestLogger(&StructuredLogger{log})
 }
 
@@ -75,13 +77,12 @@ func (l *StructuredLogger) NewLogEntry(r *http.Request) middleware.LogEntry {
 	if r.TLS != nil {
 		scheme = "https"
 	}
+
 	logFields["http_scheme"] = scheme
 	logFields["http_proto"] = r.Proto
 	logFields["http_method"] = r.Method
-
 	logFields["remote_addr"] = r.RemoteAddr
 	logFields["user_agent"] = r.UserAgent()
-
 	logFields["uri"] = fmt.Sprintf("%s://%s%s", scheme, r.Host, r.RequestURI)
 
 	entry.Logger = entry.Logger.WithFields(logFields)

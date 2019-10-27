@@ -10,7 +10,7 @@ CREATE TABLE addressLists (
         Id SERIAL PRIMARY KEY,
         CreateDate timestamp,
     	IsWhite BOOLEAN DEFAULT false,
-	Network text
+	Network VARCHAR (20) UNIQUE
 );
 
 

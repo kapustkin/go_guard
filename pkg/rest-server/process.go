@@ -21,6 +21,7 @@ func Run() error {
 	// logger init
 	logger.Init("rest-server", "0.0.1")
 	log.Info("starting app...")
+
 	conf := config.InitConfig()
 	log.Infof("use config: %v", conf)
 
@@ -58,12 +59,11 @@ func Run() error {
 
 	// Adminka
 	r.Route("/admin", func(r chi.Router) {
-		r.Post("/reset", handler.ResetBucket)
-		r.Post("/whitelist", handler.AddToWhiteList)
-		r.Delete("/whitelist", handler.RemoveFromWhiteList)
-		r.Post("/blacklist", handler.AddToBlackList)
-		r.Delete("/blacklist", handler.RemoveFromBlackList)
 		r.Post("/params", handler.UpdateParameters)
+		r.Post("/reset", handler.ResetBucket)
+		r.Get("/lists", handler.GetAllLists)
+		r.Post("/lists/add", handler.AddToList)
+		r.Post("/lists/remove", handler.RemoveFromList)
 	})
 
 	log.Infof("listner started...")
@@ -72,6 +72,7 @@ func Run() error {
 	if err != nil {
 		log.Error(err)
 	}
+
 	return err
 }
 
@@ -80,10 +81,12 @@ func getStorage(storageType int) *storage.Storage {
 	case 0:
 		var db storage.Storage
 		db = inmemory.Init()
+
 		return &db
 	default:
 		log.Panicf("storage type %d not supported", storageType)
 	}
+
 	return nil
 }
 

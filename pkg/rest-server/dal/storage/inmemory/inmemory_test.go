@@ -26,14 +26,14 @@ var testsFindOrCreateBucket = []testpair{
 	{"", &storage.Bucket{}, 0, storage.Bucket{}, fmt.Errorf("ident must be not empty")},
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var testsUpdateBucket = []testpair{
 	{"test", &storage.Bucket{Value: 1}, 2, storage.Bucket{Value: 2}, nil},
 	{"test2", &storage.Bucket{}, 0, storage.Bucket{}, fmt.Errorf("record test2 not found")},
 	{"", &storage.Bucket{}, 0, storage.Bucket{}, fmt.Errorf("ident must be not empty")},
 }
 
-// nolint: gochecknoglobals
+//nolint: gochecknoglobals
 var testsRemoveBucket = []testpair{
 	{"test", &storage.Bucket{}, 2, storage.Bucket{}, nil},
 	{"", &storage.Bucket{}, 0, storage.Bucket{}, fmt.Errorf("ident must be not empty")},
@@ -52,6 +52,7 @@ func TestFindOrCreateBucket(t *testing.T) {
 				"got", backet,
 			)
 		}
+
 		if err != nil && err.Error() != pair.resultErr.Error() {
 			t.Error(
 				"For", pair.backet,
