@@ -6,15 +6,14 @@ FROM golang:latest as builder
 # Add Maintainer Info
 LABEL maintainer="Alexandr Kapustkin <a.kapustkin@gmail.com>"
 
-ENV CGO_ENABLED=0 GOFLAGS=-mod=vendor
+ENV CGO_ENABLED=0
 
 # Set the Current Working Directory inside the container
 WORKDIR /go/bin
 # Copy files
 COPY ./ ./
-# Update packages
 # Build the Go app
-RUN go build -o rest-server ./...
+RUN go get -d -v && go build -o rest-server ./main.go
 
 # STEP 2 build a small image
 # start from scratch
