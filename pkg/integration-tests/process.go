@@ -20,9 +20,5 @@ func FeatureContext(s *godog.Suite) {
 		}
 	})
 
-	tests.ExecPingTest(s, test)
-
-	//tests.ExecCreateTest(s, test)
-	//tests.ExecEditTest(s, test)
-	//tests.ExecRemoveTest(s, test)
+	tests.ListOfTests(s, test)
 }

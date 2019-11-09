@@ -1,104 +1,14 @@
 package tests
 
 import (
-	"bytes"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
-
-	"github.com/DATA-DOG/godog/gherkin"
-	"github.com/kapustkin/go_guard/pkg/integration-tests/config"
+	"github.com/DATA-DOG/godog"
 )
 
-type NotifyTest struct {
-	// config
-	config *config.Config
-	// rest
-	responseStatusCode int
-	responseBody       []byte
-	//responseUUID       string
-}
-
-func Init(conf *config.Config) *NotifyTest {
-	return &NotifyTest{config: conf}
-}
-
-func (test *NotifyTest) iSendRequestTo(httpMethod, addr string) (err error) {
-	var r *http.Response
-
-	addr = strings.Replace(addr, "{REST_SERVER}", test.config.RestServer, -1)
-
-	switch httpMethod {
-	case http.MethodGet:
-		//nolint:gosec
-		r, err = http.Get(addr)
-		if err == nil {
-			defer r.Body.Close()
-		}
-	default:
-		err = fmt.Errorf("unknown method: %s", httpMethod)
-	}
-
-	if err != nil {
-		return err
-	}
-
-	test.responseStatusCode = r.StatusCode
-	test.responseBody, err = ioutil.ReadAll(r.Body)
-
-	return
-}
-
-func (test *NotifyTest) theResponseCodeShouldBe(code int) error {
-	if test.responseStatusCode != code {
-		return fmt.Errorf("unexpected status code: %d != %d", test.responseStatusCode, code)
-	}
-
-	return nil
-}
-
-func (test *NotifyTest) theResponseShouldMatchText(text string) error {
-	if string(test.responseBody) != text {
-		return fmt.Errorf("unexpected text: %s != %s", test.responseBody, text)
-	}
-
-	return nil
-}
-
-func (test *NotifyTest) theResponseShouldContainsText(text string) error {
-	if !strings.Contains(string(test.responseBody), text) {
-		return fmt.Errorf("unexpected text: %s not contains %s", test.responseBody, text)
-	}
-
-	return nil
-}
-
-func (test *NotifyTest) theSendRequestToWithData(httpMethod, addr,
-	contentType string, data *gherkin.DocString) (err error) {
-	var r *http.Response
-
-	addr = strings.Replace(addr, "{REST_SERVER}", test.config.RestServer, -1)
-
-	switch httpMethod {
-	case http.MethodPost:
-		replacer := strings.NewReplacer("\n", "", "\t", "")
-		cleanJSON := replacer.Replace(data.Content)
-		//nolint:gosec
-		r, err = http.Post(addr, contentType, bytes.NewReader([]byte(cleanJSON)))
-		if err == nil {
-			defer r.Body.Close()
-		}
-	default:
-		err = fmt.Errorf("unknown method: %s", httpMethod)
-	}
-
-	if err != nil {
-		return err
-	}
-
-	test.responseStatusCode = r.StatusCode
-	test.responseBody, err = ioutil.ReadAll(r.Body)
-
-	return
+func ListOfTests(s *godog.Suite, test *NotifyTest) {
+	s.Step(`^посылаю "([^"]*)" запрос к "([^"]*)"$`, test.iSendRequestTo)
+	s.Step(`^ожидаю что код ответа будет (\d+)$`, test.theResponseCodeShouldBe)
+	s.Step(`^тело ответа будет равно "([^"]*)"$`, test.theResponseShouldMatchText)
+	s.Step(`^посылаю "([^"]*)" запрос к "([^"]*)" c "([^"]*)" содержимым:$`, test.theSendRequestToWithData)
+	s.Step(`^посылаю "([^"]*)" запрос к "([^"]*)" в количестве (\d+) раз c "([^"]*)" содержимым:$`, test.theSendManyRequestsToWithData)
+	s.Step(`^ответ тело ответа будет с содержимым:$`, test.theResponseDocStringShouldMatchText)
 }
