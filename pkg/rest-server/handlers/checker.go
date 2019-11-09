@@ -52,7 +52,7 @@ func mainChecks(handler *MainHandler, login, pass, addr string) (bool, error) {
 		return false, err
 	}
 	//check login
-	loginRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("l_%s", login), params.K)
+	loginRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("l_%s", login), params.N)
 	if err != nil {
 		return false, err
 	}
@@ -62,7 +62,7 @@ func mainChecks(handler *MainHandler, login, pass, addr string) (bool, error) {
 		return false, err
 	}
 	//check ip
-	ipRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("i_%s", addr), params.N)
+	ipRes, err := checker.ProcessBucket(handler.store, fmt.Sprintf("i_%s", addr), params.K)
 	if err != nil {
 		return false, err
 	}
