@@ -4,19 +4,18 @@ import (
 	"flag"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/colors"
-	integrationtests "github.com/kapustkin/go_guard/pkg/integration-tests"
+	integrationTests "github.com/kapustkin/go_guard/pkg/integration-tests"
 )
 
 func TestMain(m *testing.M) {
-	time.Sleep(1 * time.Second)
+	//time.Sleep(1 * time.Second)
 	flag.Parse()
 
 	status := godog.RunWithOptions("integration", func(s *godog.Suite) {
-		integrationtests.FeatureContext(s)
+		integrationTests.FeatureContext(s)
 	}, godog.Options{
 		Output:    colors.Colored(os.Stdout),
 		Format:    "pretty",
