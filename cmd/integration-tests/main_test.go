@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/colors"
@@ -11,7 +12,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	//time.Sleep(1 * time.Second)
+	time.Sleep(5 * time.Second)
 	flag.Parse()
 
 	status := godog.RunWithOptions("integration", func(s *godog.Suite) {
