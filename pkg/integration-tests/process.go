@@ -14,7 +14,6 @@ func FeatureContext(s *godog.Suite) {
 	// инициализация тестов
 	test := tests.Init(сonf)
 	// выход из сценария, если он завершился с ошибкой
-
 	s.AfterScenario(func(data interface{}, err error) {
 		if err != nil {
 			log.Fatalf("%v", err)

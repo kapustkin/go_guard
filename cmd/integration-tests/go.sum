@@ -1,4 +1,8 @@
 github.com/DATA-DOG/godog v0.7.13 h1:JmgpKcra7Vf3yzI9vPsWyoQRx13tyKziHtXWDCUUgok=
 github.com/DATA-DOG/godog v0.7.13/go.mod h1:z2OZ6a3X0/YAKVqLfVzYBwFt3j6uSt3Xrqa7XTtcQE0=
-github.com/kapustkin/go_guard v0.0.0-20191109081013-38ef28aad691 h1:PCW6GETntf8lAGJ8yfCbMj7jfsHTQ/+WTbZUqExNhsA=
-github.com/kapustkin/go_guard v0.0.0-20191109081013-38ef28aad691/go.mod h1:ETbH4WDgjRlANADaXF1rJzl5Elyx0QZoxJvFeqXruow=
+github.com/kapustkin/go_guard v0.0.0-20191109092553-607638220e7e h1:f6LvYItSvltCprtL+Tb7JJvQ/P4WM3UkUPGBa+pWQFc=
+github.com/kapustkin/go_guard v0.0.0-20191109092553-607638220e7e/go.mod h1:ETbH4WDgjRlANADaXF1rJzl5Elyx0QZoxJvFeqXruow=
+github.com/kelseyhightower/envconfig v1.4.0 h1:Im6hONhd3pLkfDFsbRgu68RDNkGF1r3dvMUtDTo2cv8=
+github.com/kelseyhightower/envconfig v1.4.0/go.mod h1:cccZRl6mQpaq41TPp5QxidR+Sa3axMbJDNb//FQX6Gg=
+github.com/spf13/pflag v1.0.5 h1:iy+VFUOCP1a+8yFto/drg2CJ5u0yRoB7fZw3DKv/JXA=
+github.com/spf13/pflag v1.0.5/go.mod h1:McXfInJRrz4CZXVZOBLb0bTZqETkiAhM9Iw0y3An2Bg=
