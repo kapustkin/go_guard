@@ -68,6 +68,8 @@ func Run() error {
 
 	log.Infof("listner started...")
 
+	log.Fatal("listner started...")
+
 	err := http.ListenAndServe(conf.Host, r)
 	if err != nil {
 		log.Error(err)

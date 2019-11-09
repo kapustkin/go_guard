@@ -1,0 +1,24 @@
+# github.com/DATA-DOG/godog v0.7.13
+github.com/DATA-DOG/godog
+github.com/DATA-DOG/godog/colors
+github.com/DATA-DOG/godog/gherkin
+# github.com/go-chi/chi v4.0.2+incompatible
+github.com/go-chi/chi
+github.com/go-chi/chi/middleware
+# github.com/jmoiron/sqlx v1.2.0
+github.com/jmoiron/sqlx
+github.com/jmoiron/sqlx/reflectx
+# github.com/kelseyhightower/envconfig v1.4.0
+github.com/kelseyhightower/envconfig
+# github.com/konsorten/go-windows-terminal-sequences v1.0.1
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/lib/pq v1.2.0
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
+# github.com/sirupsen/logrus v1.4.2
+github.com/sirupsen/logrus
+# github.com/spf13/pflag v1.0.5
+github.com/spf13/pflag
+# golang.org/x/sys v0.0.0-20190422165155-953cdadca894
+golang.org/x/sys/unix
