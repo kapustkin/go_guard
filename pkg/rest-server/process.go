@@ -59,7 +59,8 @@ func Run() error {
 
 	// Adminka
 	r.Route("/admin", func(r chi.Router) {
-		r.Post("/params", handler.UpdateParameters)
+		r.Get("/params", handler.GetParameters)
+		r.Post("/params", handler.SetParameters)
 		r.Post("/reset", handler.ResetBucket)
 		r.Get("/lists", handler.GetAllLists)
 		r.Post("/lists/add", handler.AddToList)

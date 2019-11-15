@@ -7,7 +7,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-func Reset(server, address, login string) (bool, error) {
+func Reset(server, address, login string) (*RespData, error) {
 	client := resty.New()
 
 	resp, err := client.R().
@@ -15,14 +15,14 @@ func Reset(server, address, login string) (bool, error) {
 		SetBody(fmt.Sprintf(`{"login":"%s", "ip":"%s"}`, login, address)).
 		Post(fmt.Sprintf("%s/admin/reset", server))
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	var res respData
+	var res RespData
 	err = json.Unmarshal(resp.Body(), &res)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return res.Success, nil
+	return &res, nil
 }

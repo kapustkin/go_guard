@@ -105,7 +105,19 @@ func (handler *MainHandler) RemoveFromList(res http.ResponseWriter, req *http.Re
 	internal.OkResponse(res, true, nil, nil)
 }
 
-func (handler *MainHandler) UpdateParameters(res http.ResponseWriter, req *http.Request) {
+func (handler *MainHandler) GetParameters(res http.ResponseWriter, req *http.Request) {
+	logger.Infof("process get parameters")
+
+	result, err := handler.db.GetParametrs()
+	if err != nil {
+		internal.OkResponse(res, false, fmt.Errorf("%v", err), func() { logger.Errorf(err.Error()) })
+		return
+	}
+
+	internal.OkWithDataResponse(res, &result)
+}
+
+func (handler *MainHandler) SetParameters(res http.ResponseWriter, req *http.Request) {
 	var p struct {
 		K, M, N int
 	}
@@ -116,7 +128,7 @@ func (handler *MainHandler) UpdateParameters(res http.ResponseWriter, req *http.
 		return
 	}
 
-	logger.Infof("process update parameters %v", p)
+	logger.Infof("process set parameters %v", p)
 
 	err = handler.db.UpdateParametrs(p.K, p.M, p.N)
 	if err != nil {
