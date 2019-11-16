@@ -53,5 +53,15 @@ func checkBucket(bucket *storage.Bucket, limit int) (*storage.Bucket, bool) {
 		return bucket, true
 	}
 
+	//Leaky Bucket algo
+	var new_limit = int64(60 * 1000 / limit)
+	var elapsed_from_last_update = time.Since(bucket.Updated).Milliseconds()
+	var quotient = int(elapsed_from_last_update / new_limit)
+
+	if quotient > 0 {
+		bucket.Value = bucket.Value - quotient + 1
+		return bucket, true
+	}
+
 	return bucket, false
 }

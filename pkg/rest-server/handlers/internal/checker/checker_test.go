@@ -13,23 +13,23 @@ type testPairCheck struct {
 	backet *storage.Bucket
 	limit  int
 	result bool
+	value  int
 }
 
 //nolint: gochecknoglobals
 var testsCheckBucket = []testPairCheck{
-	{&storage.Bucket{Value: 2}, 3, true},
-	{&storage.Bucket{Value: 3}, 3, true},
-	{&storage.Bucket{Value: 3}, 0, true},
-	{&storage.Bucket{Created: time.Now(), Value: 3}, 3, false},
-	{&storage.Bucket{Created: time.Now().Add(time.Second * -59), Value: 3}, 3, false},
-	{&storage.Bucket{Created: time.Now().Add(time.Second * -60), Value: 3}, 3, true},
-	{&storage.Bucket{Created: time.Now().Add(time.Second * -30), Value: 2}, 3, true},
-	{&storage.Bucket{Created: time.Now().Add(time.Second * -30), Value: 3}, 3, false},
+	{&storage.Bucket{Created: time.Now(), Updated: time.Now(), Value: 2}, 3, true, 3},
+	{&storage.Bucket{Created: time.Now(), Updated: time.Now(), Value: 3}, 3, false, 3},
+
+	{&storage.Bucket{Created: time.Now(), Updated: time.Now().Add(time.Second * -5), Value: 10}, 10, false, 10},
+	{&storage.Bucket{Created: time.Now(), Updated: time.Now().Add(time.Second * -6), Value: 10}, 10, true, 10},
+
+	{&storage.Bucket{Created: time.Now(), Updated: time.Now().Add(time.Second * -20), Value: 10}, 10, true, 8},
 }
 
 func TestCheckBucket(t *testing.T) {
 	for _, pair := range testsCheckBucket {
-		_, v := checkBucket(pair.backet, pair.limit)
+		bucket, v := checkBucket(pair.backet, pair.limit)
 		if v != pair.result {
 			t.Error(
 				"For", pair.backet,
@@ -38,6 +38,15 @@ func TestCheckBucket(t *testing.T) {
 				"got", v,
 			)
 		}
+		if bucket.Value != pair.value {
+			t.Error(
+				"For", pair.backet,
+				"with limit", pair.limit,
+				"expected bucket value", pair.value,
+				"got", bucket.Value,
+			)
+		}
+
 	}
 }
 

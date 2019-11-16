@@ -12,7 +12,7 @@ services:
     hostname: rest-server
     restart: on-failure
     ports:
-     - "5000:5000"
+     - "5001:5001"
     environment:
       - REST_SERVER_DB=postgres://guard:password@postgres/ms_guard?sslmode=disable
       - REST_SERVER_HOST=:5000
