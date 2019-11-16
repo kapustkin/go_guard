@@ -31,8 +31,11 @@ func ProcessBucket(db storage.Storage, ident string, limit int) (bool, error) {
 	}
 
 	bckt, result := checkBucket(&bucket, limit)
-	err = db.UpdateBucket(ident, bckt)
+	if !result {
+		return result, nil
+	}
 
+	err = db.UpdateBucket(ident, bckt)
 	if err != nil {
 		return false, err
 	}
@@ -54,9 +57,11 @@ func checkBucket(bucket *storage.Bucket, limit int) (*storage.Bucket, bool) {
 	}
 
 	//Leaky Bucket algo
-	var new_limit = int64(60 * 1000 / limit)
-	var elapsed_from_last_update = time.Since(bucket.Updated).Milliseconds()
-	var quotient = int(elapsed_from_last_update / new_limit)
+	var newLimit = int64(60 * 1000 / limit)
+
+	var elapsedFromLastUpdate = time.Since(bucket.Updated).Milliseconds()
+
+	var quotient = int(elapsedFromLastUpdate / newLimit)
 
 	if quotient > 0 {
 		bucket.Value = bucket.Value - quotient + 1

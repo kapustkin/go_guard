@@ -14,6 +14,6 @@ CREATE TABLE addressLists (
 );
 
 
-INSERT INTO parameters (CreateDate, K, M, N) VALUES ('2019-10-19 19:00:00', 3, 6 ,9);
+INSERT INTO parameters (CreateDate, N, M, K) VALUES ('2019-10-19 19:00:00', 3, 6 ,9);
 INSERT INTO addressLists (CreateDate, IsWhite, Network) VALUES ('2019-10-19 19:00:00', true, '127.0.0.1/24');
 INSERT INTO addressLists (CreateDate, IsWhite, Network) VALUES ('2019-10-19 19:00:00', false, '127.0.1.1/24');

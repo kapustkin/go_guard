@@ -73,14 +73,6 @@ func (test *NotifyTest) theResponseDocStringShouldMatchText(text *gherkin.DocStr
 	return nil
 }
 
-func (test *NotifyTest) theResponseShouldContainsText(text string) error {
-	if !strings.Contains(string(test.responseBody), text) {
-		return fmt.Errorf("unexpected text: %s not contains %s", test.responseBody, text)
-	}
-
-	return nil
-}
-
 func (test *NotifyTest) theSendManyRequestsToWithData(httpMethod, addr string, qty int,
 	contentType string, data *gherkin.DocString) (err error) {
 	for i := 0; i < qty; i++ {
@@ -89,6 +81,7 @@ func (test *NotifyTest) theSendManyRequestsToWithData(httpMethod, addr string, q
 			return err
 		}
 	}
+
 	return
 }
 

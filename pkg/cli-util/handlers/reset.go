@@ -19,6 +19,7 @@ func Reset(server, address, login string) (*RespData, error) {
 	}
 
 	var res RespData
+
 	err = json.Unmarshal(resp.Body(), &res)
 	if err != nil {
 		return nil, err

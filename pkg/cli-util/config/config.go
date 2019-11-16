@@ -18,10 +18,13 @@ func Init() *Config {
 	if err != nil {
 		panic(err)
 	}
+
 	var config Config
+
 	err = yaml.Unmarshal(yamlFile, &config)
 	if err != nil {
 		panic(err)
 	}
+
 	return &config
 }

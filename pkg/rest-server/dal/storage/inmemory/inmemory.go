@@ -66,6 +66,7 @@ func (s *Storage) UpdateBucket(ident string, bucket *storage.Bucket) error {
 	if _, ok := s.db.data[ident]; ok {
 		bucket.Updated = time.Now()
 		s.db.data[ident] = *bucket
+
 		return nil
 	}
 

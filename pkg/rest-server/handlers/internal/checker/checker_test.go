@@ -38,6 +38,7 @@ func TestCheckBucket(t *testing.T) {
 				"got", v,
 			)
 		}
+
 		if bucket.Value != pair.value {
 			t.Error(
 				"For", pair.backet,
@@ -46,7 +47,6 @@ func TestCheckBucket(t *testing.T) {
 				"got", bucket.Value,
 			)
 		}
-
 	}
 }
 
