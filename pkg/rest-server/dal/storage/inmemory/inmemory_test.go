@@ -21,8 +21,8 @@ var db = Init()
 
 // nolint: gochecknoglobals
 var testsFindOrCreateBucket = []testpair{
-	{"test", &storage.Bucket{}, 0, storage.Bucket{Created: time.Now()}, nil},
-	{"test", &storage.Bucket{}, 0, storage.Bucket{Created: time.Now()}, nil},
+	{"test", &storage.Bucket{}, 0, storage.Bucket{Updated: time.Now()}, nil},
+	{"test", &storage.Bucket{}, 0, storage.Bucket{Updated: time.Now()}, nil},
 	{"", &storage.Bucket{}, 0, storage.Bucket{}, fmt.Errorf("ident must be not empty")},
 }
 
@@ -42,8 +42,8 @@ var testsRemoveBucket = []testpair{
 func TestFindOrCreateBucket(t *testing.T) {
 	for _, pair := range testsFindOrCreateBucket {
 		backet, err := db.FindOrCreateBucket(pair.ident)
-		if err == nil && backet.Created.Day() != pair.result.Created.Day() ||
-			backet.Created.Minute() != pair.result.Created.Minute() ||
+		if err == nil && backet.Updated.Day() != pair.result.Updated.Day() ||
+			backet.Updated.Minute() != pair.result.Updated.Minute() ||
 			backet.Value != pair.limit {
 			t.Error(
 				"For", pair.backet,

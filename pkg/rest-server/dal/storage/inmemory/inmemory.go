@@ -49,7 +49,7 @@ func (s *Storage) FindOrCreateBucket(ident string) (storage.Bucket, error) {
 		return s.db.data[ident], nil
 	}
 	// new bucket
-	s.db.data[ident] = storage.Bucket{Created: time.Now()}
+	s.db.data[ident] = storage.Bucket{Updated: time.Now(), QuotientUpdated: time.Now()}
 
 	return s.db.data[ident], nil
 }
@@ -97,7 +97,7 @@ func cleaner(s *Storage) {
 		count := 0
 
 		for name, item := range s.db.data {
-			if item.Created.After(time.Now().Add(-validTime)) {
+			if item.Updated.Before(time.Now().Add(-validTime)) {
 				delete(s.db.data, name)
 				count++
 			}
@@ -106,6 +106,7 @@ func cleaner(s *Storage) {
 		if count > 0 {
 			log.Infof("gc removed %d buckets", count)
 		}
+
 		s.db.Unlock()
 	}
 }

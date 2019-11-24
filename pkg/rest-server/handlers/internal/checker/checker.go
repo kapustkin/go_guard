@@ -35,36 +35,37 @@ func ProcessBucket(db storage.Storage, ident string, limit int) (bool, error) {
 		return result, nil
 	}
 
-	err = db.UpdateBucket(ident, bckt)
-	if err != nil {
-		return false, err
+	// если доступ не разрешен, значит нет смысла обновлять бакет
+	if result {
+		err = db.UpdateBucket(ident, bckt)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	return result, nil
 }
 
 func checkBucket(bucket *storage.Bucket, limit int) (*storage.Bucket, bool) {
-	if bucket.Created.Add(time.Second * 60).Before(time.Now()) {
-		bucket.Created = time.Now()
-		bucket.Value = 1
+	var newLimit = int64(60 * 1000 / limit)
+
+	var elapsedFromLastUpdate = time.Since(bucket.QuotientUpdated).Milliseconds()
+
+	var quotient = int(elapsedFromLastUpdate / newLimit)
+	if quotient > 0 {
+		val := bucket.Value - quotient + 1
+		if val < 1 {
+			val = 1
+		}
+
+		bucket.Value = val
+		bucket.QuotientUpdated = time.Now()
 
 		return bucket, true
 	}
 
 	if bucket.Value < limit {
 		bucket.Value++
-		return bucket, true
-	}
-
-	//Leaky Bucket algo
-	var newLimit = int64(60 * 1000 / limit)
-
-	var elapsedFromLastUpdate = time.Since(bucket.Updated).Milliseconds()
-
-	var quotient = int(elapsedFromLastUpdate / newLimit)
-
-	if quotient > 0 {
-		bucket.Value = bucket.Value - quotient + 1
 		return bucket, true
 	}
 

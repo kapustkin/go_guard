@@ -18,13 +18,15 @@ type testPairCheck struct {
 
 //nolint: gochecknoglobals
 var testsCheckBucket = []testPairCheck{
-	{&storage.Bucket{Created: time.Now(), Updated: time.Now(), Value: 2}, 3, true, 3},
-	{&storage.Bucket{Created: time.Now(), Updated: time.Now(), Value: 3}, 3, false, 3},
+	{&storage.Bucket{Updated: time.Now(), QuotientUpdated: time.Now(), Value: 2}, 3, true, 3},
+	{&storage.Bucket{Updated: time.Now(), QuotientUpdated: time.Now(), Value: 3}, 3, false, 3},
 
-	{&storage.Bucket{Created: time.Now(), Updated: time.Now().Add(time.Second * -5), Value: 10}, 10, false, 10},
-	{&storage.Bucket{Created: time.Now(), Updated: time.Now().Add(time.Second * -6), Value: 10}, 10, true, 10},
+	{&storage.Bucket{Updated: time.Now(), QuotientUpdated: time.Now().Add(time.Second * -5), Value: 10}, 10, false, 10},
+	{&storage.Bucket{Updated: time.Now(), QuotientUpdated: time.Now().Add(time.Second * -6), Value: 10}, 10, true, 10},
 
-	{&storage.Bucket{Created: time.Now(), Updated: time.Now().Add(time.Second * -20), Value: 10}, 10, true, 8},
+	{&storage.Bucket{Updated: time.Now(), QuotientUpdated: time.Now().Add(time.Second * -20), Value: 10}, 10, true, 8},
+
+	{&storage.Bucket{Updated: time.Now(), QuotientUpdated: time.Now().Add(time.Second * -15), Value: 8}, 10, true, 7},
 }
 
 func TestCheckBucket(t *testing.T) {

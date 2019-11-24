@@ -6,9 +6,9 @@ import (
 
 // Bucket
 type Bucket struct {
-	Created time.Time
-	Updated time.Time
-	Value   int
+	QuotientUpdated time.Time // last qoute update
+	Updated         time.Time // last update
+	Value           int
 }
 
 type Storage interface {
