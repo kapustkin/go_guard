@@ -12,5 +12,6 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.5
-	gopkg.in/yaml.v2 v2.2.2
+	google.golang.org/appengine v1.6.7 // indirect
+	gopkg.in/yaml.v2 v2.2.8
 )
